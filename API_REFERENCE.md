@@ -193,8 +193,8 @@ Envía mensaje de contacto.
 El backend usa las siguientes variables de entorno (ya configuradas en Cloud Run):
 
 ```bash
-# Google Gemini
-GOOGLE_API_KEY=AIzaSyALRjv7gE1DDhVMkGNQkU80x9gGu8hUyqo
+# Google Gemini - ⚠️ NUNCA PUBLIQUES AQUÍ LA API KEY REAL
+GOOGLE_API_KEY=your-google-api-key-here
 
 # MySQL (Railway)
 MYSQL_URL=mysql://user:pass@host:port/database
