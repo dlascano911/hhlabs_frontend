@@ -14,11 +14,14 @@ COPY . .
 # Build the application
 RUN npm run build
 
+# Install serve globally to serve static files
+RUN npm install -g serve
+
 # Expose the port
 EXPOSE 3000
 
-# Use the PORT environment variable from Railway
+# Use the PORT environment variable
 ENV PORT=3000
 
 # Start the server
-CMD ["npm", "run", "serve"]
+CMD ["serve", "-s", "dist", "-l", "3000"]
