@@ -1,0 +1,4 @@
+/* Page Wrapper */
+.page {
+  min-height: calc(100vh - 64px);
+}

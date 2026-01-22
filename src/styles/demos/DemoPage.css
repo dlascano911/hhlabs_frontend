@@ -1,0 +1,157 @@
+/* Demo Page */
+.demo-page {
+  background: var(--primary-bg);
+  min-height: calc(100vh - 64px);
+  padding: 40px 20px;
+}
+
+.demo-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.demo-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 40px;
+  text-align: center;
+}
+
+.demo-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+  letter-spacing: -1px;
+}
+
+.demo-subtitle {
+  color: var(--text-secondary);
+  margin-bottom: 30px;
+  font-size: 1.1rem;
+}
+
+.demo-input-section {
+  margin-bottom: 30px;
+}
+
+.demo-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.btn-process {
+  width: 100%;
+  padding: 15px 30px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-process:hover:not(:disabled) {
+  background: var(--accent-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 113, 227, 0.3);
+}
+
+.btn-process:disabled {
+  background: var(--border);
+  cursor: not-allowed;
+  transform: none;
+}
+
+.result-box {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 25px;
+  margin-top: 20px;
+  text-align: left;
+}
+
+.result-box h3 {
+  font-size: 1.3rem;
+  margin-bottom: 15px;
+  color: var(--text-primary);
+}
+
+.result-box p {
+  color: var(--text-secondary);
+  line-height: 1.8;
+  font-size: 1rem;
+}
+
+.result-box.gemini {
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  border: none;
+}
+
+.gemini-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.gemini-timing {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.btn-reset {
+  margin-top: 20px;
+  padding: 10px 25px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-reset:hover {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+}
+
+.error-box {
+  background: #fee;
+  border: 1px solid #fcc;
+  border-radius: 12px;
+  padding: 20px;
+  margin-top: 20px;
+  color: #c33;
+  font-weight: 500;
+}
+
+.timings-box {
+  background: var(--secondary-bg);
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 20px;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.timings-box p {
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .demo-card {
+    padding: 25px;
+  }
+
+  .demo-title {
+    font-size: 2rem;
+  }
+}

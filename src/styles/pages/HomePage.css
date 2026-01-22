@@ -1,0 +1,273 @@
+/* Home Page */
+.hero {
+  padding: 80px 20px;
+  background: var(--primary-bg);
+}
+
+.hero-wrapper {
+  max-width: 1600px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 45% 55%;
+  gap: 40px;
+  align-items: center;
+  padding: 0 60px;
+}
+
+.hero-content {
+  text-align: left;
+  padding-left: 60px;
+}
+
+.hero-device {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+}
+
+.hero-device-image {
+  max-width: 700px;
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 30px 60px rgba(0, 0, 0, 0.15));
+  animation: float 3s ease-in-out infinite;
+  object-fit: contain;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-15px);
+  }
+}
+
+.hero h1 {
+  font-size: 3.5rem;
+  font-weight: 700;
+  letter-spacing: -1.5px;
+  line-height: 1.1;
+  margin-bottom: 20px;
+  color: var(--text-primary);
+}
+
+.subtitle {
+  font-size: 1.5rem;
+  color: var(--accent-color);
+  margin-bottom: 20px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.hero-description {
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+  margin-bottom: 40px;
+  line-height: 1.6;
+}
+
+.hero-cta {
+  display: flex;
+  gap: 20px;
+}
+
+.btn-primary, .btn-secondary {
+  padding: 14px 32px;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: white;
+}
+
+.btn-primary:hover {
+  background: var(--accent-hover);
+  transform: translateY(-2px);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--text-primary);
+  border: 2px solid var(--border);
+}
+
+.btn-secondary:hover {
+  border-color: var(--text-primary);
+  transform: translateY(-2px);
+}
+
+/* Technical Specs Section */
+.technical-specs-section {
+  padding: 100px 20px;
+  background: var(--secondary-bg);
+  border-top: 1px solid var(--border);
+  width: 100%;
+  overflow-x: auto;
+}
+
+.specs-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.specs-container h2 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 50px;
+  color: var(--text-primary);
+}
+
+.specs-table {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  border-collapse: collapse;
+  background: var(--card-bg);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.specs-table thead {
+  background: var(--accent-color);
+}
+
+.specs-table th {
+  padding: 20px;
+  text-align: left;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: white;
+}
+
+.specs-table th:first-child {
+  width: 40%;
+}
+
+.specs-table th:nth-child(2),
+.specs-table th:nth-child(3) {
+  width: 30%;
+  text-align: center;
+}
+
+.specs-table tbody tr {
+  border-bottom: 1px solid var(--border);
+}
+
+.specs-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.specs-table tbody tr:hover {
+  background: var(--secondary-bg);
+}
+
+.specs-table td {
+  padding: 18px 20px;
+  font-size: 1rem;
+  color: var(--text-primary);
+}
+
+.specs-table td:first-child {
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.specs-table td:nth-child(2),
+.specs-table td:nth-child(3) {
+  text-align: center;
+  font-weight: 500;
+}
+
+.specs-note {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-top: 20px;
+  font-style: italic;
+  text-align: center;
+}
+
+/* Feature Stripes */
+.features {
+  width: 100%;
+}
+
+.feature-stripe {
+  padding: 60px 20px;
+  background: var(--primary-bg);
+  border-bottom: 1px solid var(--border);
+}
+
+.feature-stripe.alt {
+  background: var(--secondary-bg);
+}
+
+.feature-content {
+  max-width: 1000px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  gap: 30px;
+  align-items: flex-start;
+}
+
+.feature-icon {
+  font-size: 3rem;
+  text-align: center;
+}
+
+.feature-text h3 {
+  font-size: 1.8rem;
+  margin-bottom: 15px;
+  color: var(--text-primary);
+}
+
+.feature-text p {
+  color: var(--text-secondary);
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+
+@media (max-width: 768px) {
+  .hero-wrapper {
+    grid-template-columns: 1fr;
+    gap: 30px;
+    padding: 0 15px;
+  }
+
+  .hero-content {
+    padding-left: 0;
+    text-align: center;
+  }
+
+  .hero h1 {
+    font-size: 2.2rem;
+  }
+
+  .feature-content {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .feature-icon {
+    font-size: 2.5rem;
+  }
+
+  .feature-text h3 {
+    font-size: 1.3rem;
+  }
+
+  .feature-text p {
+    font-size: 0.9rem;
+  }
+}
