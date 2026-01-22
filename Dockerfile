@@ -17,6 +17,9 @@ RUN npm run build
 # Install serve globally to serve static files
 RUN npm install -g serve
 
+# Copy serve configuration
+COPY serve.json ./
+
 # Expose the port (Cloud Run uses PORT env var)
 EXPOSE 8080
 
@@ -24,4 +27,4 @@ EXPOSE 8080
 ENV PORT=8080
 
 # Start the server - use sh to expand PORT variable
-CMD ["sh", "-c", "serve -s dist -l ${PORT}"]
+CMD ["sh", "-c", "serve -s dist -c serve.json -l ${PORT}"]

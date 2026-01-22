@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "!/debug-sessions.html",
+      "destination": "/index.html"
+    }
+  ]
+}
