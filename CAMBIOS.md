@@ -1,3 +1,25 @@
+# 📝 Resumen de Cambios
+
+## 🚀 Migración a Google Cloud Run (22 de Enero de 2026)
+
+### URLs Actualizadas:
+- **Backend API**: `https://handheldlabs-backend-45973956798.us-central1.run.app`
+- **Almacenamiento**: `https://storage.googleapis.com/handheldlabs-storage/portable-locker`
+
+### Archivos Modificados:
+1. ✅ `src/services/trackingService.js` - URL de tracking
+2. ✅ `src/services/audioService.js` - URL de audio (TTS/STT)
+3. ✅ `src/App.jsx` - URLs de Gemini (2 ubicaciones)
+4. ✅ `src/config/s3.js` - URL de almacenamiento
+5. ✅ `public/debug-sessions.html` - URL de backend
+6. ✅ `test-sessions.html` - URL de backend
+7. ✅ `vite.config.js` - Hosts permitidos
+8. ✅ `.env.example` - Creado con variables de entorno
+
+Ver [MIGRACION_RAILWAY_A_GOOGLE_CLOUD.md](./MIGRACION_RAILWAY_A_GOOGLE_CLOUD.md) para detalles completos.
+
+---
+
 # 📝 Resumen de Cambios - Feature de Carga de Audio
 
 ## ✅ Cambios Realizados

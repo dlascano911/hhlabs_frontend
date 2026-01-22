@@ -18,8 +18,9 @@ export default defineConfig({
     host: '0.0.0.0',
     port: 3000,
     allowedHosts: [
-      'smartbuddy-web-production.up.railway.app',
-      '.railway.app'
+      'handheldlabs-frontend.web.app',
+      'handheldlabs.com',
+      '.run.app'
     ]
   },
   build: {

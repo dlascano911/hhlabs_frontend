@@ -1,0 +1,2 @@
+# Por favor, guarda la imagen del dispositivo Verba aquí como "verba-device.png"
+# La imagen debe ser del dispositivo blanco circular con el ícono de micrófono
