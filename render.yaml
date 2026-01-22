@@ -1,0 +1,10 @@
+[build]
+builder = "heroku/buildpacks:20"
+
+[env]
+PORT = "3000"
+
+[[services]]
+protocol = "tcp"
+internal_port = 3000
+external_port = 3000

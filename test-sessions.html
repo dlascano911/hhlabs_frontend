@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧪 Test de Sesiones Conversacionales - Verba AI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 20px;
+            height: calc(100vh - 40px);
+        }
+
+        .main-panel {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px 30px;
+            border-radius: 20px 20px 0 0;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .session-info {
+            background: rgba(255,255,255,0.2);
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-top: 15px;
+            font-size: 13px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .session-id {
+            font-family: 'Courier New', monospace;
+            background: rgba(0,0,0,0.2);
+            padding: 4px 8px;
+            border-radius: 5px;
+            font-size: 12px;
+        }
+
+        .chat-area {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+            background: #f8f9fa;
+        }
+
+        .message {
+            margin-bottom: 20px;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message-header {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .message-badge {
+            background: #667eea;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+        }
+
+        .topic-change-badge {
+            background: #ff6b6b;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .message-user {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 18px 18px 18px 4px;
+            border-left: 4px solid #667eea;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .message-assistant {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 18px 18px 4px 18px;
+            box-shadow: 0 2px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .message-time {
+            font-size: 11px;
+            color: #999;
+            margin-top: 8px;
+            display: flex;
+            gap: 15px;
+        }
+
+        .input-area {
+            padding: 25px 30px;
+            background: white;
+            border-top: 2px solid #f0f0f0;
+        }
+
+        .input-wrapper {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .input-field {
+            flex: 1;
+            padding: 15px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            font-size: 15px;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .input-field:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .stats-panel {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .stats-panel h2 {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: #667eea;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .stat-item {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            transition: all 0.3s;
+        }
+
+        .stat-item:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .stat-value.session-id-value {
+            font-size: 12px;
+            font-family: 'Courier New', monospace;
+            word-break: break-all;
+        }
+
+        .controls-panel {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .controls-panel h2 {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: #667eea;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .control-btn {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 12px;
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .control-btn-reset {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .control-btn-reset:hover {
+            background: #ff5252;
+            transform: scale(1.05);
+        }
+
+        .control-btn-test {
+            background: #51cf66;
+            color: white;
+        }
+
+        .control-btn-test:hover {
+            background: #40c057;
+            transform: scale(1.05);
+        }
+
+        .control-btn-export {
+            background: #4dabf7;
+            color: white;
+        }
+
+        .control-btn-export:hover {
+            background: #339af0;
+            transform: scale(1.05);
+        }
+
+        .test-scenarios {
+            margin-top: 15px;
+        }
+
+        .test-scenario {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-left: 3px solid #667eea;
+        }
+
+        .test-scenario:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+
+        .loader {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .performance-chart {
+            margin-top: 20px;
+        }
+
+        .chart-bar {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .chart-label {
+            width: 80px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .chart-bar-fill {
+            flex: 1;
+            height: 24px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.5s;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        .context-preview {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-size: 12px;
+            font-family: 'Courier New', monospace;
+            color: #666;
+            border-left: 3px solid #667eea;
+        }
+
+        .language-indicator {
+            display: inline-block;
+            padding: 3px 10px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 12px;
+            font-size: 11px;
+            margin-left: 10px;
+        }
+
+        @media (max-width: 1200px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                flex-direction: row;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Panel Principal -->
+        <div class="main-panel">
+            <div class="header">
+                <h1>
+                    🧪 Test de Sesiones Conversacionales
+                    <span class="language-indicator" id="languageIndicator">Auto-detectar</span>
+                </h1>
+                <p>Prueba el sistema de gestión de contexto y detección de cambio de tema</p>
+                <div class="session-info">
+                    <div>
+                        <strong>Session ID:</strong> 
+                        <span class="session-id" id="sessionIdDisplay">Sin sesión activa</span>
+                    </div>
+                    <div>
+                        <strong>Mensajes:</strong> <span id="messageCount">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chat-area" id="chatArea">
+                <div class="empty-state">
+                    <div class="empty-state-icon">💬</div>
+                    <h3>Comienza una conversación</h3>
+                    <p>Escribe un mensaje para iniciar la sesión</p>
+                </div>
+            </div>
+
+            <div class="input-area">
+                <div class="input-wrapper">
+                    <input 
+                        type="text" 
+                        class="input-field" 
+                        id="userInput" 
+                        placeholder="Escribe tu mensaje aquí..."
+                        autocomplete="off"
+                    >
+                    <button class="btn btn-primary" id="sendBtn" onclick="sendMessage()">
+                        <span id="sendBtnText">Enviar</span>
+                        <span id="sendBtnLoader" style="display: none;" class="loader"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <!-- Panel de Estadísticas -->
+            <div class="stats-panel">
+                <h2>📊 Estadísticas</h2>
+                
+                <div class="stat-item">
+                    <div class="stat-label">Sesión Activa</div>
+                    <div class="stat-value session-id-value" id="sessionIdStat">—</div>
+                </div>
+
+                <div class="stat-item">
+                    <div class="stat-label">Total de Mensajes</div>
+                    <div class="stat-value" id="totalMessages">0</div>
+                </div>
+
+                <div class="stat-item">
+                    <div class="stat-label">Cambios de Tema</div>
+                    <div class="stat-value" id="topicChanges">0</div>
+                </div>
+
+                <div class="stat-item">
+                    <div class="stat-label">Tiempo Promedio</div>
+                    <div class="stat-value" id="avgTime">—</div>
+                </div>
+
+                <div class="performance-chart">
+                    <strong style="font-size: 14px; color: #666;">⚡ Último Tiempo de Respuesta</strong>
+                    <div style="margin-top: 12px;">
+                        <div class="chart-bar">
+                            <div class="chart-label">Total:</div>
+                            <div class="chart-bar-fill" id="chartTotal" style="width: 0%">0ms</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel de Controles -->
+            <div class="controls-panel">
+                <h2>🎮 Controles</h2>
+                
+                <button class="control-btn control-btn-reset" onclick="resetSession()">
+                    🔄 Reiniciar Sesión
+                </button>
+
+                <button class="control-btn control-btn-export" onclick="exportConversation()">
+                    💾 Exportar Conversación
+                </button>
+
+                <div class="test-scenarios">
+                    <strong style="font-size: 14px; color: #666; display: block; margin-bottom: 10px;">
+                        🧪 Escenarios de Prueba
+                    </strong>
+                    
+                    <div class="test-scenario" onclick="runTestScenario('same-topic')">
+                        ✅ Mismo Tema (Viajes a Roma)
+                    </div>
+                    
+                    <div class="test-scenario" onclick="runTestScenario('topic-change')">
+                        🔄 Cambio de Tema (Roma → Arañas)
+                    </div>
+                    
+                    <div class="test-scenario" onclick="runTestScenario('multi-lang')">
+                        🌍 Multi-idioma (ES → EN)
+                    </div>
+
+                    <div class="test-scenario" onclick="runTestScenario('context-test')">
+                        📚 Test de Contexto (Preguntas ambiguas)
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Estado de la aplicación
+        let sessionId = null;
+        let messageCount = 0;
+        let topicChangeCount = 0;
+        let responseTimes = [];
+        let conversationHistory = [];
+
+        // Configuración
+        const API_URL = 'https://smartbuddy-backend-production.up.railway.app';
+
+        // Inicializar
+        document.getElementById('userInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+
+        // Función principal de envío
+        async function sendMessage() {
+            const input = document.getElementById('userInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+
+            // UI: Deshabilitar input
+            setLoading(true);
+            input.value = '';
+
+            // Agregar mensaje del usuario al chat
+            addMessage('user', message);
+
+            try {
+                const startTime = performance.now();
+
+                // Llamada al backend
+                const response = await fetch(`${API_URL}/process-text`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        text: message,
+                        language: 'es',  // Puedes cambiar esto o auto-detectar
+                        session_id: sessionId
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.status}`);
+                }
+
+                const data = await response.json();
+                const endTime = performance.now();
+                const responseTime = Math.round(endTime - startTime);
+
+                // Actualizar session_id
+                if (data.session_id) {
+                    const isNewSession = sessionId !== data.session_id;
+                    sessionId = data.session_id;
+                    updateSessionUI(sessionId);
+                    
+                    if (isNewSession && messageCount > 0) {
+                        topicChangeCount++;
+                        updateStats();
+                    }
+                }
+
+                // Agregar respuesta del asistente
+                addMessage('assistant', data.response, responseTime, data.topic_changed);
+
+                // Actualizar estadísticas
+                messageCount++;
+                responseTimes.push(responseTime);
+                updateStats();
+
+                // Guardar en historial
+                conversationHistory.push({
+                    timestamp: new Date().toISOString(),
+                    user: message,
+                    assistant: data.response,
+                    sessionId: sessionId,
+                    responseTime: responseTime
+                });
+
+            } catch (error) {
+                console.error('Error:', error);
+                addMessage('system', `❌ Error: ${error.message}`);
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        // Agregar mensaje al chat
+        function addMessage(type, text, time = null, topicChanged = false) {
+            const chatArea = document.getElementById('chatArea');
+            
+            // Remover empty state si existe
+            const emptyState = chatArea.querySelector('.empty-state');
+            if (emptyState) emptyState.remove();
+
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message';
+
+            const now = new Date().toLocaleTimeString('es-ES', { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                second: '2-digit'
+            });
+
+            let badge = '';
+            if (type === 'user') {
+                badge = '<span class="message-badge">TÚ</span>';
+            } else if (type === 'assistant') {
+                badge = '<span class="message-badge">VERBA AI</span>';
+                if (topicChanged) {
+                    badge += '<span class="topic-change-badge">🔄 Cambio de tema detectado</span>';
+                }
+            }
+
+            let timeInfo = '';
+            if (time !== null) {
+                timeInfo = `<div class="message-time">
+                    <span>⏱️ ${time}ms</span>
+                    <span>🕐 ${now}</span>
+                </div>`;
+            } else if (type === 'user') {
+                timeInfo = `<div class="message-time"><span>🕐 ${now}</span></div>`;
+            }
+
+            messageDiv.innerHTML = `
+                <div class="message-header">${badge}</div>
+                <div class="message-${type === 'system' ? 'user' : type}">
+                    ${text}
+                    ${timeInfo}
+                </div>
+            `;
+
+            chatArea.appendChild(messageDiv);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        // Actualizar UI de sesión
+        function updateSessionUI(sid) {
+            const shortId = sid.substring(0, 8) + '...' + sid.substring(sid.length - 8);
+            document.getElementById('sessionIdDisplay').textContent = shortId;
+            document.getElementById('sessionIdStat').textContent = sid;
+            document.getElementById('messageCount').textContent = messageCount;
+        }
+
+        // Actualizar estadísticas
+        function updateStats() {
+            document.getElementById('totalMessages').textContent = messageCount;
+            document.getElementById('topicChanges').textContent = topicChangeCount;
+
+            if (responseTimes.length > 0) {
+                const avgTime = Math.round(
+                    responseTimes.reduce((a, b) => a + b, 0) / responseTimes.length
+                );
+                document.getElementById('avgTime').textContent = avgTime + 'ms';
+
+                // Actualizar gráfico
+                const lastTime = responseTimes[responseTimes.length - 1];
+                const maxTime = 5000; // 5 segundos como máximo
+                const percentage = Math.min((lastTime / maxTime) * 100, 100);
+                
+                const chartTotal = document.getElementById('chartTotal');
+                chartTotal.style.width = percentage + '%';
+                chartTotal.textContent = lastTime + 'ms';
+            }
+        }
+
+        // Control de carga
+        function setLoading(isLoading) {
+            const input = document.getElementById('userInput');
+            const btn = document.getElementById('sendBtn');
+            const btnText = document.getElementById('sendBtnText');
+            const btnLoader = document.getElementById('sendBtnLoader');
+
+            input.disabled = isLoading;
+            btn.disabled = isLoading;
+
+            if (isLoading) {
+                btnText.style.display = 'none';
+                btnLoader.style.display = 'inline-block';
+            } else {
+                btnText.style.display = 'inline';
+                btnLoader.style.display = 'none';
+            }
+        }
+
+        // Reiniciar sesión
+        function resetSession() {
+            if (!confirm('¿Estás seguro de que quieres reiniciar la sesión?')) return;
+
+            sessionId = null;
+            messageCount = 0;
+            topicChangeCount = 0;
+            responseTimes = [];
+            conversationHistory = [];
+
+            document.getElementById('sessionIdDisplay').textContent = 'Sin sesión activa';
+            document.getElementById('sessionIdStat').textContent = '—';
+            document.getElementById('messageCount').textContent = '0';
+            document.getElementById('totalMessages').textContent = '0';
+            document.getElementById('topicChanges').textContent = '0';
+            document.getElementById('avgTime').textContent = '—';
+            document.getElementById('chartTotal').style.width = '0%';
+            document.getElementById('chartTotal').textContent = '0ms';
+
+            const chatArea = document.getElementById('chatArea');
+            chatArea.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-state-icon">💬</div>
+                    <h3>Comienza una conversación</h3>
+                    <p>Escribe un mensaje para iniciar la sesión</p>
+                </div>
+            `;
+        }
+
+        // Exportar conversación
+        function exportConversation() {
+            if (conversationHistory.length === 0) {
+                alert('No hay conversación para exportar');
+                return;
+            }
+
+            const exportData = {
+                sessionId: sessionId,
+                messageCount: messageCount,
+                topicChanges: topicChangeCount,
+                averageResponseTime: responseTimes.length > 0 
+                    ? Math.round(responseTimes.reduce((a, b) => a + b, 0) / responseTimes.length)
+                    : 0,
+                conversation: conversationHistory,
+                exportedAt: new Date().toISOString()
+            };
+
+            const blob = new Blob([JSON.stringify(exportData, null, 2)], { 
+                type: 'application/json' 
+            });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `conversation-${sessionId?.substring(0, 8)}-${Date.now()}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+
+            alert('✅ Conversación exportada exitosamente');
+        }
+
+        // Escenarios de prueba
+        async function runTestScenario(scenario) {
+            const scenarios = {
+                'same-topic': [
+                    '¿Sabes sobre Roma?',
+                    'Quiero ir de vacaciones',
+                    '¿Qué pizza me recomiendas?',
+                    '¿Cuánto cuesta el vuelo?'
+                ],
+                'topic-change': [
+                    '¿Sabes sobre Roma?',
+                    'Quiero ir de vacaciones',
+                    '¿Cuántas patas tiene una araña?',
+                    '¿Dónde viven las arañas?'
+                ],
+                'multi-lang': [
+                    'Hola, ¿cómo estás?',
+                    'Hello, how are you?',
+                    'Bonjour, comment allez-vous?',
+                    '¿Me puedes ayudar en español?'
+                ],
+                'context-test': [
+                    'Quiero ir a Italia',
+                    '¿Cuánto cuesta?',
+                    '¿Y el hotel?',
+                    '¿Qué documentos necesito?'
+                ]
+            };
+
+            const messages = scenarios[scenario];
+            if (!messages) return;
+
+            for (let i = 0; i < messages.length; i++) {
+                document.getElementById('userInput').value = messages[i];
+                await sendMessage();
+                await new Promise(resolve => setTimeout(resolve, 2000)); // Esperar 2s entre mensajes
+            }
+        }
+
+        // Inicialización
+        console.log('🧪 Test de Sesiones Conversacionales - Verba AI');
+        console.log('API URL:', API_URL);
+        console.log('Listo para probar! 🚀');
+    </script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+[build]
+builder = "nixpacks"
+
+[build.nixpacks]
+providers = ["nodejs"]
+
+[[build.nixpacks.files]]
+path = "package.json"
+build_tool = "npm"
+
+[run]
+start = "npm run serve"
