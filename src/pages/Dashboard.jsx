@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { 
   Plus, 
@@ -7,17 +7,39 @@ import {
   Activity,
   DollarSign,
   GitBranch,
-  Zap
+  Zap,
+  Wallet,
+  RefreshCw,
+  AlertCircle
 } from 'lucide-react'
 import { useGraphStore } from '../stores/graphStore'
 import { usePriceStore } from '../stores/priceStore'
+import api from '../api/client'
 
 export default function Dashboard() {
   const { graphs, fetchGraphs } = useGraphStore()
   const { prices, connectWebSocket, disconnectWebSocket } = usePriceStore()
+  const [coinbaseBalance, setCoinbaseBalance] = useState(null)
+  const [balanceLoading, setBalanceLoading] = useState(true)
+  const [balanceError, setBalanceError] = useState(null)
+
+  const fetchCoinbaseBalance = async () => {
+    setBalanceLoading(true)
+    setBalanceError(null)
+    try {
+      const response = await api.get('/api/trading/coinbase/balance')
+      setCoinbaseBalance(response.data)
+    } catch (error) {
+      console.error('Error fetching Coinbase balance:', error)
+      setBalanceError(error.response?.data?.detail || 'Error al conectar con Coinbase')
+    } finally {
+      setBalanceLoading(false)
+    }
+  }
 
   useEffect(() => {
     fetchGraphs()
+    fetchCoinbaseBalance()
     connectWebSocket(['BTCUSDT', 'ETHUSDT', 'DOGEUSDT', 'SOLUSDT'])
     return () => disconnectWebSocket()
   }, [])
@@ -43,6 +65,68 @@ export default function Dashboard() {
           <Plus className="w-5 h-5" />
           Nuevo Grafo
         </Link>
+      </div>
+
+      {/* Coinbase Balance */}
+      <div className="bg-gradient-to-r from-blue-600/20 to-purple-600/20 border border-crypto-border rounded-lg p-6 mb-8">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center">
+              <Wallet className="w-5 h-5 text-blue-400" />
+            </div>
+            <div>
+              <h2 className="text-lg font-semibold text-white">Balance Coinbase</h2>
+              <p className="text-sm text-gray-400">Cuenta conectada</p>
+            </div>
+          </div>
+          <button
+            onClick={fetchCoinbaseBalance}
+            disabled={balanceLoading}
+            className="p-2 text-gray-400 hover:text-white transition-colors disabled:opacity-50"
+          >
+            <RefreshCw className={`w-5 h-5 ${balanceLoading ? 'animate-spin' : ''}`} />
+          </button>
+        </div>
+
+        {balanceLoading ? (
+          <div className="flex items-center justify-center py-8">
+            <RefreshCw className="w-8 h-8 text-blue-400 animate-spin" />
+          </div>
+        ) : balanceError ? (
+          <div className="flex items-center gap-3 p-4 bg-red-500/10 border border-red-500/30 rounded-lg">
+            <AlertCircle className="w-5 h-5 text-red-400" />
+            <p className="text-red-400">{balanceError}</p>
+          </div>
+        ) : coinbaseBalance ? (
+          <div>
+            {/* Main balances grid */}
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+              {coinbaseBalance.accounts?.filter(acc => acc.total > 0).map(account => (
+                <div key={account.uuid} className="bg-crypto-dark/50 rounded-lg p-3">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="font-medium text-white">{account.currency}</span>
+                  </div>
+                  <p className="text-lg font-bold text-white">
+                    {account.total.toLocaleString('en-US', { 
+                      minimumFractionDigits: account.currency === 'USD' ? 2 : 4,
+                      maximumFractionDigits: account.currency === 'USD' ? 2 : 8
+                    })}
+                  </p>
+                  {account.hold > 0 && (
+                    <p className="text-xs text-yellow-400">
+                      En hold: {account.hold.toLocaleString()}
+                    </p>
+                  )}
+                </div>
+              ))}
+            </div>
+            
+            {/* Summary */}
+            {coinbaseBalance.accounts?.length === 0 && (
+              <p className="text-gray-400 text-center py-4">No hay fondos en la cuenta</p>
+            )}
+          </div>
+        ) : null}
       </div>
 
       {/* Stats */}

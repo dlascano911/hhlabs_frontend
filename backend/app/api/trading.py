@@ -12,7 +12,7 @@ import json
 from app.core.database import get_db
 from app.models import Trade, CoinState, TransitionHistory
 from app.schemas import TradeResponse, CoinStateResponse, BacktestConfig, BacktestResult
-from app.services import exchange_service, market_data_service
+from app.services import exchange_service, market_data_service, coinbase_service
 from app.engine import executor, MarketData
 
 router = APIRouter(prefix="/trading", tags=["trading"])
@@ -27,7 +27,53 @@ async def get_trading_status():
         'active_graphs': len(executor.active_graphs),
         'coin_states': executor.get_all_coin_states(),
         'exchange_connected': exchange_service.exchange is not None,
+        'coinbase_configured': coinbase_service.is_configured(),
     }
+
+@router.get("/coinbase/balance")
+async def get_coinbase_balance():
+    """Obtiene el balance de Coinbase"""
+    if not coinbase_service.is_configured():
+        raise HTTPException(
+            status_code=503,
+            detail="Coinbase API credentials not configured"
+        )
+    
+    try:
+        balance = await coinbase_service.get_balance()
+        return balance
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/coinbase/accounts")
+async def get_coinbase_accounts():
+    """Obtiene las cuentas de Coinbase"""
+    if not coinbase_service.is_configured():
+        raise HTTPException(
+            status_code=503,
+            detail="Coinbase API credentials not configured"
+        )
+    
+    try:
+        accounts = await coinbase_service.get_accounts()
+        return {"accounts": accounts}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/coinbase/ticker/{product_id}")
+async def get_coinbase_ticker(product_id: str):
+    """Obtiene el ticker de Coinbase (ej: BTC-USD)"""
+    if not coinbase_service.is_configured():
+        raise HTTPException(
+            status_code=503,
+            detail="Coinbase API credentials not configured"
+        )
+    
+    try:
+        ticker = await coinbase_service.get_ticker(product_id)
+        return ticker
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/trades", response_model=List[TradeResponse])
 async def list_trades(
