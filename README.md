@@ -1,14 +1,60 @@
-# Nuevo Proyecto
+# CryptoFlow - Trading Bot con Grafos y ML
 
-Proyecto en blanco listo para desarrollar.
+Sistema de trading automatizado basado en grafos con optimización por Machine Learning.
 
-## Estructura
+## 🚀 Características
 
-- `index.html` - Página principal
-- `styles/` - Archivos CSS
-- `js/` - Archivos JavaScript
-- `backup/` - Proyecto anterior (respaldo)
+- **Editor Visual de Grafos**: Diseña estrategias arrastrando y conectando nodos
+- **Nodos Personalizables**: Nodos de transición (condiciones) y acción (buy/sell/hold)
+- **Una moneda por nodo**: Cada símbolo solo puede estar en un estado a la vez
+- **ML para Optimización**: Graph Neural Networks para afinar parámetros
+- **Backtesting**: Prueba tus estrategias con datos históricos
+- **Multi-Exchange**: Soporte para Binance, Bybit, OKX y más
 
-## Notas
+## 📁 Estructura
 
-El proyecto anterior está completamente respaldado en la carpeta `backup/`.
+```
+├── src/                    # Frontend React
+│   ├── components/
+│   │   ├── nodes/         # Componentes de nodos
+│   │   ├── editor/        # Editor de grafos
+│   │   └── layout/        # Layout y navegación
+│   ├── pages/             # Páginas principales
+│   ├── stores/            # Estado global (Zustand)
+│   └── api/               # Cliente API
+│
+├── backend/               # Backend FastAPI
+│   ├── app/
+│   │   ├── api/          # Endpoints REST
+│   │   ├── core/         # Configuración y DB
+│   │   ├── models/       # Modelos SQLAlchemy
+│   │   ├── engine/       # Motor de grafos
+│   │   ├── services/     # Exchange, Market Data
+│   │   └── ml/           # Machine Learning
+│   └── requirements.txt
+│
+├── backup/                # Proyecto anterior (respaldo)
+└── docker-compose.yml     # Servicios Docker
+```
+
+## 🛠️ Instalación
+
+### Con Docker (Recomendado)
+```bash
+docker-compose up -d
+```
+
+### Manual
+```bash
+# Frontend
+npm install && npm run dev
+
+# Backend
+cd backend && pip install -r requirements.txt
+uvicorn app.main:app --reload
+```
+
+## 🌐 URLs
+- Frontend: http://localhost:3000
+- Backend: http://localhost:8000
+- API Docs: http://localhost:8000/docs
