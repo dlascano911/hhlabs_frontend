@@ -91,8 +91,8 @@ class CoinState(Base):
     entry_time = Column(DateTime(timezone=True), nullable=True)
     quantity = Column(Numeric(18, 8), nullable=True)
     
-    # Metadata adicional
-    metadata = Column(JSON, default={})
+    # Metadata adicional (renamed to avoid SQLAlchemy reserved word)
+    extra_data = Column(JSON, default={})
     
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
     
