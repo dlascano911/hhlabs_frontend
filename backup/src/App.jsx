@@ -54,7 +54,7 @@ function App() {
             <li><a onClick={() => { trackingService.trackClick('nav_contact'); handlePageChange('contact'); }} className={currentPage === 'contact' ? 'active' : ''}>Contact</a></li>
             <li><a onClick={() => { trackingService.trackClick('nav_demo'); handlePageChange('demo'); }} className={currentPage === 'demo' ? 'active demo-link' : 'demo-link'}>Demo</a></li>
             <li><a onClick={() => { trackingService.trackClick('nav_test_sessions'); handlePageChange('test-sessions'); }} className={currentPage === 'test-sessions' ? 'active demo-link' : 'demo-link'}>Test Sessions</a></li>
-            <li><a href="/debug-sessions.html" target="_blank" onClick={() => trackingService.trackClick('nav_debug_sessions')} className="demo-link">Debug Sessions</a></li>
+            <li><a href="/debug-sessions.html" target="_blank" rel="noopener noreferrer" onClick={(e) => { e.preventDefault(); trackingService.trackClick('nav_debug_sessions'); window.open('/debug-sessions.html', '_blank'); }} className="demo-link">Debug Sessions</a></li>
           </ul>
         </div>
       </nav>
