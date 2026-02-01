@@ -3,11 +3,12 @@ API Routes para trading y datos de mercado
 """
 from fastapi import APIRouter, Depends, HTTPException, WebSocket, WebSocketDisconnect
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, func
 from typing import List, Dict, Any
 from uuid import UUID
 import asyncio
 import json
+from decimal import Decimal
 
 from app.core.database import get_db
 from app.models import Trade, CoinState, TransitionHistory
@@ -19,6 +20,49 @@ router = APIRouter(prefix="/trading", tags=["trading"])
 
 # WebSocket connections
 active_connections: List[WebSocket] = []
+
+
+@router.get("/stats")
+async def get_trading_stats(db: AsyncSession = Depends(get_db)):
+    """Obtiene estadísticas reales de trading"""
+    try:
+        # Total trades
+        total_result = await db.execute(select(func.count(Trade.id)))
+        total_trades = total_result.scalar() or 0
+        
+        # Winning trades (pnl > 0)
+        winning_result = await db.execute(
+            select(func.count(Trade.id)).where(Trade.pnl > 0)
+        )
+        winning_trades = winning_result.scalar() or 0
+        
+        # Total PnL
+        pnl_result = await db.execute(select(func.sum(Trade.pnl)))
+        total_pnl = float(pnl_result.scalar() or 0)
+        
+        # Today's PnL (last 24 hours)
+        from datetime import datetime, timedelta
+        yesterday = datetime.utcnow() - timedelta(days=1)
+        today_pnl_result = await db.execute(
+            select(func.sum(Trade.pnl)).where(Trade.timestamp >= yesterday)
+        )
+        today_pnl = float(today_pnl_result.scalar() or 0)
+        
+        return {
+            "totalTrades": total_trades,
+            "winningTrades": winning_trades,
+            "totalPnL": total_pnl,
+            "todayPnL": today_pnl,
+        }
+    except Exception as e:
+        # Si la base de datos no está disponible, retornar valores por defecto
+        return {
+            "totalTrades": 0,
+            "winningTrades": 0,
+            "totalPnL": 0.0,
+            "todayPnL": 0.0,
+        }
+
 
 @router.get("/status")
 async def get_trading_status():

@@ -38,7 +38,10 @@ class Settings(BaseSettings):
     EXCHANGE_API_SECRET: Optional[str] = None
     EXCHANGE_TESTNET: bool = True
     
-    # Coinbase
+    # Coinbase - Advanced Trade API (HMAC auth)
+    COINBASE_API_KEY: Optional[str] = None
+    COINBASE_API_SECRET: Optional[str] = None
+    # Coinbase - CDP (JWT auth) - Legacy
     COINBASE_API_KEY_NAME: Optional[str] = None
     COINBASE_PRIVATE_KEY: Optional[str] = None
     
@@ -50,8 +53,13 @@ class Settings(BaseSettings):
     AUTO_RECALIBRATE: bool = True
     RECALIBRATE_INTERVAL_HOURS: int = 24
     
+    # Learning/Tracking
+    LEARNING_ENABLED: bool = True
+    SIMULATION_MODE: bool = True
+    
     class Config:
         env_file = ".env"
+        extra = "ignore"  # Ignorar campos extra del .env
 
 # Initialize settings
 settings = Settings()

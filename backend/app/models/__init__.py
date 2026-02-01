@@ -10,7 +10,26 @@ from .models import (
     ActionType,
 )
 
+from .tracking import (
+    MarketSnapshot,
+    CandleData,
+    GraphVersion,
+    TransitionEvent,
+    TradeEvent,
+    Position,
+    LearningSnapshot,
+    ParameterOptimizationLog,
+    PredictionLog,
+    SimulationRun,
+    SystemEvent,
+    DailyStats,
+    SimulationMode,
+    MarketCondition,
+    PaperTradingVersion,
+)
+
 __all__ = [
+    # Original models
     "TradingGraph",
     "Node",
     "Edge",
@@ -20,4 +39,20 @@ __all__ = [
     "MLOptimization",
     "NodeType",
     "ActionType",
+    # Tracking models
+    "MarketSnapshot",
+    "CandleData",
+    "GraphVersion",
+    "TransitionEvent",
+    "TradeEvent",
+    "Position",
+    "LearningSnapshot",
+    "ParameterOptimizationLog",
+    "PredictionLog",
+    "SimulationRun",
+    "SystemEvent",
+    "DailyStats",
+    "SimulationMode",
+    "MarketCondition",
+    "PaperTradingVersion",
 ]

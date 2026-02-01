@@ -1,52 +1,89 @@
 import { create } from 'zustand'
+import api from '../api/client'
 
 export const usePriceStore = create((set, get) => ({
   prices: {},
   ws: null,
   connected: false,
+  loading: false,
+  error: null,
 
-  connectWebSocket: (symbols) => {
-    // For demo, simulate price updates
-    const mockPrices = {
-      BTCUSDT: { price: 98500, change: 2.35 },
-      ETHUSDT: { price: 3450, change: 1.82 },
-      DOGEUSDT: { price: 0.32, change: -1.24 },
-      SOLUSDT: { price: 185, change: 4.56 },
-    }
+  // Fetch prices from Coinbase API
+  fetchPrices: async () => {
+    const symbols = ['BTC-USD', 'ETH-USD', 'DOGE-USD', 'SOL-USD']
     
-    set({ prices: mockPrices, connected: true })
-
-    // Simulate real-time updates
-    const interval = setInterval(() => {
+    set({ loading: true, error: null })
+    
+    try {
+      const pricePromises = symbols.map(async (symbol) => {
+        try {
+          const response = await api.get(`/api/trading/coinbase/ticker/${symbol}`)
+          const data = response.data
+          
+          // Get the latest trade price
+          const trades = data.trades || []
+          const latestPrice = trades.length > 0 ? parseFloat(trades[0].price) : 0
+          const bestBid = parseFloat(data.best_bid) || latestPrice
+          const bestAsk = parseFloat(data.best_ask) || latestPrice
+          
+          return {
+            symbol: symbol.replace('-USD', 'USD'),
+            price: latestPrice,
+            bid: bestBid,
+            ask: bestAsk,
+            change: 0, // Will be calculated from previous price
+          }
+        } catch (err) {
+          console.error(`Error fetching ${symbol}:`, err)
+          return null
+        }
+      })
+      
+      const results = await Promise.all(pricePromises)
+      
       set(state => {
         const newPrices = { ...state.prices }
-        Object.keys(newPrices).forEach(symbol => {
-          const change = (Math.random() - 0.5) * 0.1
-          newPrices[symbol] = {
-            ...newPrices[symbol],
-            price: newPrices[symbol].price * (1 + change / 100),
-            change: newPrices[symbol].change + (Math.random() - 0.5) * 0.1,
+        
+        results.forEach(result => {
+          if (result) {
+            const prevPrice = newPrices[result.symbol]?.price || result.price
+            const change = prevPrice > 0 
+              ? ((result.price - prevPrice) / prevPrice) * 100 
+              : 0
+            
+            newPrices[result.symbol] = {
+              price: result.price,
+              bid: result.bid,
+              ask: result.ask,
+              change: newPrices[result.symbol]?.change !== undefined 
+                ? newPrices[result.symbol].change + change 
+                : 0,
+              lastUpdate: new Date().toISOString(),
+            }
           }
         })
-        return { prices: newPrices }
+        
+        return { prices: newPrices, loading: false, connected: true }
       })
-    }, 2000)
+    } catch (err) {
+      console.error('Error fetching prices:', err)
+      set({ error: err.message, loading: false })
+    }
+  },
 
-    // Store interval id for cleanup
-    set({ ws: interval })
-
-    // Real WebSocket implementation would be:
-    // const streams = symbols.map(s => `${s.toLowerCase()}@ticker`).join('/')
-    // const ws = new WebSocket(`wss://stream.binance.com:9443/ws/${streams}`)
-    // ws.onmessage = (event) => {
-    //   const data = JSON.parse(event.data)
-    //   set(state => ({
-    //     prices: {
-    //       ...state.prices,
-    //       [data.s]: { price: parseFloat(data.c), change: parseFloat(data.P) }
-    //     }
-    //   }))
-    // }
+  // Start polling for prices
+  connectWebSocket: (symbols) => {
+    const { fetchPrices } = get()
+    
+    // Initial fetch
+    fetchPrices()
+    
+    // Poll every 3 seconds
+    const interval = setInterval(() => {
+      fetchPrices()
+    }, 3000)
+    
+    set({ ws: interval, connected: true })
   },
 
   disconnectWebSocket: () => {

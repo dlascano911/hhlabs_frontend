@@ -23,6 +23,13 @@ export default function Dashboard() {
   const [balanceLoading, setBalanceLoading] = useState(true)
   const [balanceError, setBalanceError] = useState(null)
 
+  const [tradingStats, setTradingStats] = useState({
+    totalTrades: 0,
+    winningTrades: 0,
+    totalPnL: 0,
+    todayPnL: 0
+  })
+
   const fetchCoinbaseBalance = async () => {
     setBalanceLoading(true)
     setBalanceError(null)
@@ -37,18 +44,33 @@ export default function Dashboard() {
     }
   }
 
+  const fetchTradingStats = async () => {
+    try {
+      const response = await api.get('/api/trading/stats')
+      setTradingStats(response.data)
+    } catch (error) {
+      console.error('Error fetching trading stats:', error)
+    }
+  }
+
   useEffect(() => {
     fetchGraphs()
     fetchCoinbaseBalance()
-    connectWebSocket(['BTCUSDT', 'ETHUSDT', 'DOGEUSDT', 'SOLUSDT'])
+    fetchTradingStats()
+    connectWebSocket(['BTC-USD', 'ETH-USD', 'DOGE-USD', 'SOL-USD'])
     return () => disconnectWebSocket()
   }, [])
 
+  // Calculate real stats
+  const winRate = tradingStats.totalTrades > 0 
+    ? ((tradingStats.winningTrades / tradingStats.totalTrades) * 100).toFixed(1) 
+    : '0'
+
   const stats = [
     { label: 'Grafos Activos', value: graphs.filter(g => g.is_active).length, icon: GitBranch, color: 'text-crypto-blue' },
-    { label: 'Trades Hoy', value: 12, icon: Zap, color: 'text-crypto-purple' },
-    { label: 'PnL Diario', value: '+$234.50', icon: DollarSign, color: 'text-crypto-green' },
-    { label: 'Win Rate', value: '67%', icon: Activity, color: 'text-crypto-yellow' },
+    { label: 'Total Trades', value: tradingStats.totalTrades, icon: Zap, color: 'text-crypto-purple' },
+    { label: 'PnL Total', value: `${tradingStats.totalPnL >= 0 ? '+' : ''}$${tradingStats.totalPnL.toFixed(2)}`, icon: DollarSign, color: tradingStats.totalPnL >= 0 ? 'text-crypto-green' : 'text-crypto-red' },
+    { label: 'Win Rate', value: `${winRate}%`, icon: Activity, color: 'text-crypto-yellow' },
   ]
 
   return (
@@ -146,26 +168,56 @@ export default function Dashboard() {
 
       {/* Prices */}
       <div className="bg-crypto-card border border-crypto-border rounded-lg p-4 mb-8">
-        <h2 className="text-lg font-semibold text-white mb-4">Precios en Tiempo Real</h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-semibold text-white">Precios en Tiempo Real</h2>
+          <div className="flex items-center gap-2">
+            <span className={`w-2 h-2 rounded-full ${Object.keys(prices).length > 0 ? 'bg-crypto-green animate-pulse' : 'bg-gray-600'}`} />
+            <span className="text-xs text-gray-400">Coinbase</span>
+          </div>
+        </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {Object.entries(prices).map(([symbol, data]) => (
-            <div key={symbol} className="bg-crypto-dark rounded-lg p-3">
-              <div className="flex items-center justify-between mb-1">
-                <span className="font-medium text-white">{symbol.replace('USDT', '')}</span>
+            <div key={symbol} className="bg-crypto-dark rounded-lg p-4 border border-crypto-border/50 hover:border-crypto-blue/50 transition-colors">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${
+                    symbol.includes('BTC') ? 'bg-orange-500/20 text-orange-400' :
+                    symbol.includes('ETH') ? 'bg-blue-500/20 text-blue-400' :
+                    symbol.includes('DOGE') ? 'bg-yellow-500/20 text-yellow-400' :
+                    'bg-purple-500/20 text-purple-400'
+                  }`}>
+                    {symbol.replace('USD', '').slice(0, 3)}
+                  </div>
+                  <span className="font-medium text-white">{symbol.replace('USD', '/USD')}</span>
+                </div>
                 {data.change >= 0 ? (
                   <TrendingUp className="w-4 h-4 text-crypto-green" />
                 ) : (
                   <TrendingDown className="w-4 h-4 text-crypto-red" />
                 )}
               </div>
-              <p className="text-lg font-bold text-white">
-                ${data.price?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || '-.--'}
+              <p className="text-2xl font-bold text-white mb-1">
+                ${data.price?.toLocaleString('en-US', { 
+                  minimumFractionDigits: data.price < 1 ? 4 : 2, 
+                  maximumFractionDigits: data.price < 1 ? 6 : 2 
+                }) || '-.--'}
               </p>
-              <p className={`text-sm ${data.change >= 0 ? 'text-crypto-green' : 'text-crypto-red'}`}>
-                {data.change >= 0 ? '+' : ''}{data.change?.toFixed(2) || '0.00'}%
-              </p>
+              <div className="flex items-center justify-between">
+                <p className={`text-sm font-medium ${data.change >= 0 ? 'text-crypto-green' : 'text-crypto-red'}`}>
+                  {data.change >= 0 ? '▲' : '▼'} {Math.abs(data.change || 0).toFixed(2)}%
+                </p>
+                <p className="text-xs text-gray-500">
+                  {data.lastUpdate ? new Date(data.lastUpdate).toLocaleTimeString() : '--:--'}
+                </p>
+              </div>
             </div>
           ))}
+          {Object.keys(prices).length === 0 && (
+            <div className="col-span-4 text-center py-8">
+              <RefreshCw className="w-8 h-8 text-gray-600 mx-auto mb-2 animate-spin" />
+              <p className="text-gray-400">Cargando precios de Coinbase...</p>
+            </div>
+          )}
         </div>
       </div>
 

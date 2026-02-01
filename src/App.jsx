@@ -4,6 +4,9 @@ import Layout from './components/layout/Layout'
 import Dashboard from './pages/Dashboard'
 import GraphEditor from './pages/GraphEditor'
 import Backtesting from './pages/Backtesting'
+import PaperTradingSimple from './pages/PaperTradingSimple'
+import PaperTradingAuto from './pages/PaperTradingAuto'
+import AgentNodes from './pages/AgentNodes'
 import Settings from './pages/Settings'
 
 function App() {
@@ -25,6 +28,9 @@ function App() {
           <Route path="editor" element={<GraphEditor />} />
           <Route path="editor/:graphId" element={<GraphEditor />} />
           <Route path="backtesting" element={<Backtesting />} />
+          <Route path="paper-trading-doge" element={<PaperTradingAuto />} />
+          <Route path="paper-trading-manual" element={<PaperTradingSimple />} />
+          <Route path="agent" element={<AgentNodes />} />
           <Route path="settings" element={<Settings />} />
         </Route>
       </Routes>
