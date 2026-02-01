@@ -43,7 +43,7 @@ class Settings(BaseSettings):
     COINBASE_PRIVATE_KEY: Optional[str] = None
     
     # GCP
-    GOOGLE_CLOUD_PROJECT: Optional[str] = None
+    GOOGLE_CLOUD_PROJECT: Optional[str] = "handheldlabs"
     
     # ML
     ML_MODEL_PATH: str = "./ml_models"
